@@ -2,42 +2,63 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  const [showPopup, setShowPopup] = useState(false);
   const [jsonData, setJsonData] = useState(null);
+  const [showAdvice, setShowAdvice] = useState(false);
 
   useEffect(() => {
     // Fetching JSON from the public folder
-    fetch('/hello15.json')
+    fetch('/n3.json')
       .then((response) => response.json())
       .then((data) => setJsonData(data));
   }, []);
 
-  const handleClick = () => {
-    setShowPopup(true);
+  const handleShowClick = () => {
+    setShowAdvice(true);
   };
 
-  const closePopup = () => {
-    setShowPopup(false);
+  const handleCloseClick = () => {
+    setShowAdvice(false);
   };
 
   return (
     <div className="App">
-      <div className="button-container">
-        <button className="circle-button" onClick={handleClick}>
-          Click me
-        </button>
-      </div>
-      {showPopup && jsonData && (
-        <div className="popup">
-          <div className="popup-content">
-            <span>{jsonData.nutritional_advice}</span>
-            <hr/>
-            <button className="close-button" onClick={closePopup}>
-              Close
+      <header className="App-header">
+        <h1>Nutritional Advisor</h1>
+        <p>Get nutritional advice based on your food intake</p>
+      </header>
+      <div className="content-container">
+        {/* Display the image if jsonData is available */}
+        {jsonData && (
+          <img
+            src={`data:image/jpeg;base64,${jsonData.image}`}
+            alt={jsonData.food_item}
+            className="food-image"
+          />
+        )}
+        <div className="button-container">
+          {!showAdvice && (
+            <button className="rect-button" onClick={handleShowClick}>
+              Show Advice
+            </button>
+          )}
+        </div>
+        {showAdvice && jsonData && (
+          <div className="json-output">
+            <h3>
+              Food Item Detected: {jsonData.food_item
+                .toLowerCase()
+                .split(' ')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ')}
+            </h3>
+            <h3>Nutritional Advice</h3>
+            <p>{jsonData.nutritional_advice}</p>
+            <button className="close-button" onClick={handleCloseClick}>
+              Close Advice
             </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
